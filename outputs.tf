@@ -1,1 +1,0 @@
-// Outputs du projet Terraform 

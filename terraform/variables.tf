@@ -1,19 +1,19 @@
 variable "project_id" {
-  description = "ID du projet GCP"
+  description = "GCP project ID"
   type        = string
 }
 
 variable "region" {
-  description = "Région GCP"
+  description = "GCP region"
   type        = string
 }
 
 variable "zone" {
-  description = "Zone GCP"
+  description = "GCP zone"
   type        = string
 }
 
 variable "tf_service_account" {
-  description = "Service account utilisé par Terraform"
+  description = "Service account used by Terraform"
   type        = string
 } 
