@@ -20,15 +20,15 @@ help:  ## Show this help message
 
 ## Initialize Terraform
 init:  ## Initialize Terraform
-	@echo "\n:ampoule: Initializing Terraform for $(ENV) environment..."
+	@echo "\n💡 Initializing Terraform for $(ENV) environment..."
 	terraform init
 
 ## Show Terraform plan for the selected environment
 plan:  ## Show Terraform plan for the selected environment
-	@echo "\n:ampoule: Planning Terraform for $(ENV) environment using $(VARS_FILE)..."
+	@echo "\n💡 Planning Terraform for $(ENV) environment using $(VARS_FILE)..."
 	terraform plan -var-file="$(VARS_FILE)"
 
 ## Apply Terraform for the selected environment
 apply: ## Apply Terraform for the selected environment
-	@echo "\n:ampoule: Applying Terraform for $(ENV) environment using $(VARS_FILE)..."
+	@echo "\n💡 Applying Terraform for $(ENV) environment using $(VARS_FILE)..."
 	terraform apply -var-file="$(VARS_FILE)" 

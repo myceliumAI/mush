@@ -12,7 +12,7 @@ sudo apt-get install -y curl
 # Get instance name
 INSTANCE_NAME=$(curl -s -H "Metadata-Flavor: Google" http://metadata.google.internal/computeMetadata/v1/instance/name)
 
-# Define master node name (e.g., k3s-cluster-0)
+# Define master node name
 MASTER_NAME="${INSTANCE_NAME%-*}-0"
 
 if [[ "$INSTANCE_NAME" == "$MASTER_NAME" ]]; then
@@ -29,8 +29,7 @@ else
     sleep 5
     MASTER_IP=$(getent hosts "$MASTER_NAME" | awk '{ print $1 }')
   done
-  # Get the join token from metadata or a shared location (for demo, we fake it)
-  # In production, use a GCS bucket or metadata server to share the token
-  AGENT_TOKEN="REPLACE_WITH_TOKEN"
+  # Get the join token (TO DO)
+  AGENT_TOKEN="HEY_IAM_A_SUPER_TOKEN"
   curl -sfL https://get.k3s.io | K3S_URL="https://$MASTER_IP:6443" K3S_TOKEN="$AGENT_TOKEN" sh -
 fi

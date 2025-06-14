@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="static/mush.png" alt="mush logo" width="200" style="border-radius: 50%;"/>
+  <img src="static/mush.png" alt="mush logo" width="200"/>
 </p>
 
 <div align="center">
