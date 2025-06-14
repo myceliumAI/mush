@@ -1,0 +1,34 @@
+# Terraform state and crash logs
+*.tfstate
+*.tfstate.*
+crash.log
+.terraform/
+.terraform.lock.hcl
+
+# Sensitive variable files
+*.tfvars
+*.tfvars.json
+
+# Kubeconfig and credentials
+k3s.yaml
+kubeconfig
+
+# Shell history and logs
+*.log
+*.bak
+*.swp
+
+# Editor and OS files
+.DS_Store
+*.swp
+*.swo
+.idea/
+.vscode/
+*.code-workspace
+
+# Python cache (if any scripts)
+__pycache__/
+*.pyc
+
+# Misc
+*.tmp

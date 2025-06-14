@@ -13,7 +13,6 @@ This module creates a Google Compute Engine Managed Instance Group (MIG) and its
 - `machine_type`: Machine type (default: e2-medium)
 - `image`: Image to use (default: debian-cloud/debian-11)
 - `startup_script`: Startup script to install K3s (optional)
-- `target_size`: Number of nodes in the cluster (default: 3)
 
 ## Outputs
 - `instance_group_self_link`: Self link of the created instance group
@@ -28,6 +27,5 @@ module "k3s_cluster" {
   machine_type   = "e2-medium"
   image          = "debian-cloud/debian-11"
   startup_script = file("${path.module}/startup.sh")
-  target_size    = 3
 }
 ``` 

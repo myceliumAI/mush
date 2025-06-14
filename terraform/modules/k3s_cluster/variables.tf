@@ -15,9 +15,9 @@ variable "machine_type" {
 }
 
 variable "image" {
-  description = "Image to use for the nodes (e.g. debian-cloud/debian-11)"
+  description = "Image to use for the nodes (e.g. ubuntu-os-cloud/ubuntu-2204-lts)"
   type        = string
-  default     = "debian-cloud/debian-11"
+  default     = "ubuntu-os-cloud/ubuntu-2204-lts"
 }
 
 variable "startup_script" {
@@ -26,8 +26,14 @@ variable "startup_script" {
   default     = ""
 }
 
-variable "target_size" {
-  description = "Number of nodes in the cluster"
+variable "min_size" {
+  description = "Minimum number of instances in the group"
   type        = number
-  default     = 3
+  default     = 1
+}
+
+variable "max_size" {
+  description = "Maximum number of instances in the group"
+  type        = number
+  default     = 5
 } 

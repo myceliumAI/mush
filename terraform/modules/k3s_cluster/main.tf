@@ -13,7 +13,6 @@ resource "google_compute_instance_template" "this" {
 
   network_interface {
     network = "default"
-    access_config {}
   }
 
   metadata_startup_script = var.startup_script
@@ -28,9 +27,19 @@ resource "google_compute_region_instance_group_manager" "this" {
   version {
     instance_template = google_compute_instance_template.this.self_link
   }
-  target_size        = var.target_size
-  auto_healing_policies {
-    health_check      = null
-    initial_delay_sec = 300
+}
+
+resource "google_compute_region_autoscaler" "this" {
+  name   = "${var.name}-autoscaler"
+  region = var.region
+  target = google_compute_region_instance_group_manager.this.id
+
+  autoscaling_policy {
+    min_replicas = var.min_size
+    max_replicas = var.max_size
+    cooldown_period     = 60
+    cpu_utilization {
+      target = 0.6
+    }
   }
 } 
