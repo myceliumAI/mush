@@ -9,7 +9,7 @@
 ### The Modern Data Platform
 
 [![Stars](https://img.shields.io/github/stars/myceliumAI/mush?style=social)](https://github.com/myceliumAI/mush)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![License](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](./LICENSE)
 [![Issues](https://img.shields.io/github/issues/myceliumAI/mush)](https://github.com/myceliumAI/mush/issues)
 [![Last Commit](https://img.shields.io/github/last-commit/myceliumAI/mush)](https://github.com/myceliumAI/mush/commits/main)
 
