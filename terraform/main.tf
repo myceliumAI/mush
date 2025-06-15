@@ -20,8 +20,9 @@ resource "google_compute_firewall" "k3s_internal" {
 }
 
 module "k3s_cluster" {
-  source        = "./modules/k3s_cluster"
-  name          = "k3s-cluster"
-  region        = var.region
-  startup_script = "./modules/k3s_cluster/scripts/startup.sh"
+  source     = "./modules/k3s_cluster"
+  name       = "k3s-cluster"
+  region     = var.region
+  zone       = var.zone
+  project_id = var.project_id
 }

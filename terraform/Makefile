@@ -4,7 +4,7 @@
 ENV ?= prod
 VARS_FILE := environments/$(ENV).tfvars
 
-.PHONY: help init plan apply
+.PHONY: help init plan apply destroy format
 
 help:  ## Show this help message
 	@echo ""
@@ -31,4 +31,15 @@ plan:  ## Show Terraform plan for the selected environment
 ## Apply Terraform for the selected environment
 apply: ## Apply Terraform for the selected environment
 	@echo "\n💡 Applying Terraform for $(ENV) environment using $(VARS_FILE)..."
-	terraform apply -var-file="$(VARS_FILE)" 
+	terraform apply -var-file="$(VARS_FILE)"
+
+## Destroy Terraform for the selected environment
+destroy: ## Destroy the Terraform stack for the selected environment
+	@echo "\n💡 Destroying Terraform for $(ENV) environment using $(VARS_FILE)..."
+	terraform destroy -var-file="$(VARS_FILE)"
+
+## Format Terraform files in the terraform folder and validate
+format: ## Format all Terraform files in the terraform folder and validate
+	terraform fmt -recursive .
+	terraform validate
+
