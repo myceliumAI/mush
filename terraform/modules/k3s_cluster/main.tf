@@ -46,7 +46,7 @@ resource "google_compute_instance" "k3s_master" {
 
 # Agent node template: used by the MIG to create k3s agent nodes
 resource "google_compute_instance_template" "k3s_agent_template" {
-  name         = "${var.name}-agent-template"
+  name_prefix  = "${var.name}-agent-template-"
   machine_type = var.machine_type
   region       = var.region
 
@@ -68,6 +68,11 @@ resource "google_compute_instance_template" "k3s_agent_template" {
     email  = google_service_account.k3s_nodes.email
     scopes = ["cloud-platform"]
   }
+
+  lifecycle {
+    # create a new template before destroying the old one
+    create_before_destroy = true
+  }
 }
 
 # Managed Instance Group (MIG) for k3s agent nodes
@@ -75,8 +80,14 @@ resource "google_compute_region_instance_group_manager" "k3s_agents" {
   name               = "${var.name}-agents-mig"
   region             = var.region
   base_instance_name = "${var.name}-agent"
+
   version {
     instance_template = google_compute_instance_template.k3s_agent_template.self_link
+  }
+
+  update_policy {
+    type           = "PROACTIVE"
+    minimal_action = "RESTART"
   }
 }
 
@@ -122,4 +133,4 @@ resource "google_secret_manager_secret_iam_member" "nodes_add" {
   secret_id = google_secret_manager_secret.k3s_token.id
   role      = "roles/secretmanager.secretVersionAdder"
   member    = "serviceAccount:${google_service_account.k3s_nodes.email}"
-} 
+}
