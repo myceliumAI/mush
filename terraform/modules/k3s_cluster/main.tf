@@ -86,8 +86,9 @@ resource "google_compute_region_instance_group_manager" "k3s_agents" {
   }
 
   update_policy {
-    type           = "PROACTIVE"
-    minimal_action = "RESTART"
+    type                  = "PROACTIVE"
+    minimal_action        = "RESTART"
+    max_unavailable_fixed = 3
   }
 }
 
