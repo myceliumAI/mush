@@ -19,3 +19,8 @@ output "master_instance_ip" {
   value = module.k3s_cluster.master_instance_ip
 }
 
+output "kubeconfig_secret_id" {
+  value       = module.k3s_cluster.kubeconfig_secret_id
+  description = "Secret Manager secret ID that stores the cluster kubeconfig"
+}
+
