@@ -27,3 +27,9 @@ variable "tf_service_account" {
 # =========================
 # Optional Variables
 # =========================
+
+variable "kubeconfig_secret_name" {
+  description = "Name of the Secret Manager secret where the K3s kubeconfig will be stored"
+  type        = string
+  default     = "k3s-kubeconfig"
+}

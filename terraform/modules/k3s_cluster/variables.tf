@@ -60,4 +60,9 @@ variable "k3s_service_account_name" {
   description = "Name of the service account for k3s nodes"
   type        = string
   default     = "k3s-nodes-sa"
-} 
+}
+variable "kubeconfig_secret_name" {
+  description = "Nom du secret contenant le kubeconfig"
+  type        = string
+  default     = "k3s-kubeconfig"
+}
