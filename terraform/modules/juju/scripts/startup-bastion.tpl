@@ -2,14 +2,13 @@
 set -euo pipefail
 
 ###############################################################################
-# 0. System prerequisites (root)
+# 0. System prerequisites
 ###############################################################################
 apt-get update -y
+apt-get install -y dbus-x11
 curl -fsSL "https://dl.k8s.io/release/$(curl -sL https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" \
   -o /usr/local/bin/kubectl && chmod +x /usr/local/bin/kubectl
-snap install juju --channel=3/stable      # strict; no need for --classic
-apt-get install -y dbus-x11
-
+snap install juju --classic --channel=2.9/stable
 ###############################################################################
 # 1. Wait for kubeconfig secret to be available in Secret Manager
 ###############################################################################
@@ -67,7 +66,7 @@ sudo -Hu ubuntu bash -c '\
   if ! juju models --format=short | awk "{print $1}" | grep -Fxq mush-kubeflow; then \
        juju add-model mush-kubeflow mush-k3s-cloud; \
   fi; \
-  juju deploy kubeflow --trust || true \
+  juju deploy kubeflow --channel=1.7/stable --trust || true \
 '
 
 
