@@ -2,38 +2,70 @@
 set -euo pipefail
 
 ###############################################################################
-# 0. Pré-requis système (root)
+# 0. System prerequisites (root)
 ###############################################################################
 apt-get update -y
 curl -fsSL "https://dl.k8s.io/release/$(curl -sL https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" \
   -o /usr/local/bin/kubectl && chmod +x /usr/local/bin/kubectl
-snap install juju --channel=3/stable      # strict ; pas besoin de --classic
+snap install juju --channel=3/stable      # strict; no need for --classic
+apt-get install -y dbus-x11
 
 ###############################################################################
-# 1. kubeconfig : on le récupère depuis Secret Manager et on le place dans
-#    /home/ubuntu/.kube/config (on crée le chemin si nécessaire)
+# 1. Wait for kubeconfig secret to be available in Secret Manager
+###############################################################################
+for i in {1..30}; do
+  if gcloud secrets versions access latest --secret="${kubeconfig_secret_name}" --project="${project_id}" > /dev/null 2>&1; then
+    echo "✅ kubeconfig secret is available"
+    break
+  else
+    echo "❎ Waiting for kubeconfig secret to be available... ($i/30)"
+    sleep 10
+  fi
+done
+
+# Final check and fail gracefully if still not available
+if ! gcloud secrets versions access latest --secret="${kubeconfig_secret_name}" --project="${project_id}" > /dev/null 2>&1; then
+  echo "❌ kubeconfig secret was not available after waiting. Exiting."
+  exit 1
+fi
+
+###############################################################################
+# 2. kubeconfig: retrieve from Secret Manager and place in /home/ubuntu/.kube/config
 ###############################################################################
 gcloud secrets versions access latest \
-      --secret="k3s-kubeconfig" \
-      --project="delphaproduction" \
+      --secret="${kubeconfig_secret_name}" \
+      --project="${project_id}" \
       > /tmp/kcfg
 
-mkdir -p /home/ubuntu/.kube                        # si le dossier n'existe pas
+mkdir -p /home/ubuntu/.kube                        # create directory if it does not exist
 install -o ubuntu -g ubuntu -m600 -D /tmp/kcfg /home/ubuntu/.kube/config
 
 ###############################################################################
-# 2. Bloc Juju — obligatoirement sous 'ubuntu'
+# 2b. Wait for Kubernetes API to be ready
+###############################################################################
+for i in {1..30}; do
+  if sudo -u ubuntu KUBECONFIG=/home/ubuntu/.kube/config kubectl version; then
+    echo "✅ Kubernetes API is ready"
+    break
+  else
+    echo "❎ Waiting for Kubernetes API to be ready... ($i/30)"
+    sleep 10
+  fi
+done
+
+###############################################################################
+# 3. Juju block — must be run as 'ubuntu'
 ###############################################################################
 sudo -Hu ubuntu bash -c '\
   set -euo pipefail; \
   export KUBECONFIG=$HOME/.kube/config; \
   eval "$(dbus-launch --exit-with-session)"; \
-  juju add-k8s my-k3s-cloud --client || true; \
-  if ! juju controllers --format=yaml | grep -q "^  my-k3s-controller:"; then \
-       juju bootstrap my-k3s-cloud my-k3s-controller; \
+  juju add-k8s mush-k3s-cloud --client || true; \
+  if ! juju controllers --format=yaml | grep -q "^  mush-k3s-controller:"; then \
+       juju bootstrap mush-k3s-cloud mush-k3s-controller; \
   fi; \
-  if ! juju models --format=short | awk "{print \$1}" | grep -Fxq kubeflow; then \
-       juju add-model kubeflow my-k3s-cloud; \
+  if ! juju models --format=short | awk "{print $1}" | grep -Fxq mush-kubeflow; then \
+       juju add-model mush-kubeflow mush-k3s-cloud; \
   fi; \
   juju deploy kubeflow --trust || true \
 '

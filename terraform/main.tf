@@ -1,21 +1,3 @@
-resource "google_project_service" "cloudresourcemanager" {
-  project = var.project_id
-  service = "cloudresourcemanager.googleapis.com"
-  disable_on_destroy = false
-}
-
-resource "google_project_service" "secretmanager" {
-  project = var.project_id
-  service = "secretmanager.googleapis.com"
-  disable_on_destroy = false
-}
-
-resource "google_project_service" "compute" {
-  project = var.project_id
-  service = "compute.googleapis.com"
-  disable_on_destroy = false
-}
-
 # K3s internal firewall
 resource "google_compute_firewall" "k3s_internal" {
   name    = "k3s-allow-internal"
@@ -40,22 +22,21 @@ resource "google_compute_firewall" "k3s_internal" {
 
 # K3s cluster
 module "k3s_cluster" {
-  source                 = "./modules/k3s_cluster"
-  name                   = "k3s-cluster"
-  region                 = var.region
-  zone                   = var.zone
-  project_id             = var.project_id
-  kubeconfig_secret_name = var.kubeconfig_secret_name
+  source     = "./modules/k3s_cluster"
+  name       = "k3s-cluster"
+  region     = var.region
+  zone       = var.zone
+  project_id = var.project_id
 }
 
 # Juju bastion (deploys after k3s cluster since it depends on cluster outputs)
 module "juju_bastion" {
   source                 = "./modules/juju"
-  region                 = var.region
+  name                   = "juju-bastion"
   zone                   = var.zone
   project_id             = var.project_id
+  kubeconfig_secret_name = module.k3s_cluster.kubeconfig_secret_name
   kubeconfig_secret_id   = module.k3s_cluster.kubeconfig_secret_id
-  kubeconfig_secret_name = var.kubeconfig_secret_name
 }
 
 # Cloud Router for NAT

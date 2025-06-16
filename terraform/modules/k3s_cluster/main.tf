@@ -4,7 +4,7 @@
 locals {
   master_startup_script = templatefile("${path.module}/scripts/startup-master.tpl", {
     project_id             = var.project_id
-    secret_name            = var.k3s_secret_name
+    k3s_token_secret_name  = var.k3s_token_secret_name
     kubeconfig_secret_name = var.kubeconfig_secret_name
   })
 }
@@ -12,9 +12,9 @@ locals {
 # Render agent startup script
 locals {
   agent_startup_script = templatefile("${path.module}/scripts/startup-agent.tpl", {
-    project_id  = var.project_id
-    secret_name = var.k3s_secret_name
-    master_ip   = google_compute_instance.k3s_master.network_interface[0].network_ip
+    project_id            = var.project_id
+    k3s_token_secret_name = var.k3s_token_secret_name
+    master_ip             = google_compute_instance.k3s_master.network_interface[0].network_ip
   })
 }
 
@@ -37,7 +37,7 @@ resource "google_compute_instance" "k3s_master" {
 
   metadata_startup_script = local.master_startup_script
 
-  tags = ["k3s", "k3s-master"]
+  tags = ["k3s", "k3s-master", "mush"]
 
   service_account {
     email  = google_service_account.k3s_nodes.email
@@ -63,7 +63,7 @@ resource "google_compute_instance_template" "k3s_agent_template" {
 
   metadata_startup_script = local.agent_startup_script
 
-  tags = ["k3s", "k3s-agent"]
+  tags = ["k3s", "k3s-agent", "mush"]
 
   service_account {
     email  = google_service_account.k3s_nodes.email
@@ -109,8 +109,3 @@ resource "google_compute_region_autoscaler" "this" {
   }
 }
 
-# Service account for all k3s nodes (master and agents)
-resource "google_service_account" "k3s_nodes" {
-  account_id   = var.k3s_service_account_name
-  display_name = "K3s Nodes Service Account"
-}

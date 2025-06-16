@@ -2,8 +2,8 @@
 # Required Variables
 # =========================
 
-variable "region" {
-  description = "GCP region"
+variable "name" {
+  description = "Name of the juju bastion host"
   type        = string
 }
 
@@ -14,6 +14,16 @@ variable "zone" {
 
 variable "project_id" {
   description = "GCP project ID"
+  type        = string
+}
+
+variable "kubeconfig_secret_id" {
+  description = "ID of the Secret Manager secret that contains the cluster kubeconfig"
+  type        = string
+}
+
+variable "kubeconfig_secret_name" {
+  description = "Secret Manager secret name that stores the kubeconfig (used in startup script)"
   type        = string
 }
 
@@ -39,12 +49,4 @@ variable "juju_service_account_name" {
   default     = "juju-bastion-sa"
 }
 
-variable "kubeconfig_secret_id" {
-  description = "ID of the Secret Manager secret that contains the cluster kubeconfig"
-  type        = string
-}
 
-variable "kubeconfig_secret_name" {
-  description = "Secret Manager secret name that stores the kubeconfig (used in startup script)"
-  type        = string
-} 

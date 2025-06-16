@@ -1,4 +1,12 @@
 
+
+# Service account for all k3s nodes (master and agents)
+resource "google_service_account" "k3s_nodes" {
+  account_id   = var.k3s_service_account_name
+  display_name = "K3s Nodes Service Account"
+}
+
+
 # IAM binding: allow k3s nodes to access the join token secret
 resource "google_secret_manager_secret_iam_member" "nodes_access" {
   secret_id = google_secret_manager_secret.k3s_token.id
