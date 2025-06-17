@@ -62,10 +62,10 @@ export KUBECONFIG=$HOME/.kube/config
 eval "$(dbus-launch --exit-with-session)"
 
 # Add k8s cloud
-juju add-k8s mush-k3s-cloud --client
+kubectl config view --raw | juju add-k8s mush-k3s-cloud --client
 
 # Bootstrap a fresh controller
-juju bootstrap mush-k3s-cloud mush-k3s-controller --debug --config controller-service-type=NodePort
+juju bootstrap mush-k3s-cloud mush-k3s-controller --debug --config controller-service-type=cluster
 
 # Add model
 juju add-model mush-kubeflow mush-k3s-cloud
@@ -73,5 +73,3 @@ juju add-model mush-kubeflow mush-k3s-cloud
 # Deploy Kubeflow
 juju deploy kubeflow --channel=1.7/stable --trust
 EOSCRIPT
-
-
