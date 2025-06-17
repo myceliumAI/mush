@@ -55,18 +55,23 @@ done
 ###############################################################################
 # 3. Juju block — must be run as 'ubuntu'
 ###############################################################################
-sudo -Hu ubuntu bash -c '\
-  set -euo pipefail; \
-  export KUBECONFIG=$HOME/.kube/config; \
-  eval "$(dbus-launch --exit-with-session)"; \
-  juju add-k8s mush-k3s-cloud --client || true; \
-  if ! juju controllers --format=yaml | grep -q "^  mush-k3s-controller:"; then \
-       juju bootstrap mush-k3s-cloud mush-k3s-controller; \
-  fi; \
-  if ! juju models --format=short | awk "{print $1}" | grep -Fxq mush-kubeflow; then \
-       juju add-model mush-kubeflow mush-k3s-cloud; \
-  fi; \
-  juju deploy kubeflow --channel=1.7/stable --trust || true \
-'
+echo "💡 This script assumes a clean slate and will set up the Juju controller and models."
+sudo -Hu ubuntu bash <<'EOSCRIPT'
+set -eo pipefail
+export KUBECONFIG=$HOME/.kube/config
+eval "$(dbus-launch --exit-with-session)"
+
+# Add k8s cloud
+juju add-k8s mush-k3s-cloud --client
+
+# Bootstrap a fresh controller
+juju bootstrap mush-k3s-cloud mush-k3s-controller --debug --config controller-service-type=NodePort
+
+# Add model
+juju add-model mush-kubeflow mush-k3s-cloud
+
+# Deploy Kubeflow
+juju deploy kubeflow --channel=1.7/stable --trust
+EOSCRIPT
 
 

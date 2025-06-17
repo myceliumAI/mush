@@ -37,6 +37,7 @@ module "juju_bastion" {
   project_id             = var.project_id
   kubeconfig_secret_name = module.k3s_cluster.kubeconfig_secret_name
   kubeconfig_secret_id   = module.k3s_cluster.kubeconfig_secret_id
+  depends_on             = [module.k3s_cluster]
 }
 
 # Cloud Router for NAT
