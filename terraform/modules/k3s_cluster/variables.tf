@@ -50,14 +50,19 @@ variable "max_size" {
   default     = 5
 }
 
-variable "k3s_secret_name" {
+variable "k3s_token_secret_name" {
   description = "Name of the k3s join token secret in Secret Manager"
   type        = string
   default     = "k3s-join-token"
+}
+variable "kubeconfig_secret_name" {
+  description = "Name of the secret containing the kubeconfig"
+  type        = string
+  default     = "k3s-kubeconfig"
 }
 
 variable "k3s_service_account_name" {
   description = "Name of the service account for k3s nodes"
   type        = string
   default     = "k3s-nodes-sa"
-} 
+}

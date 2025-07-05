@@ -3,17 +3,18 @@
 # Render master startup script
 locals {
   master_startup_script = templatefile("${path.module}/scripts/startup-master.tpl", {
-    project_id  = var.project_id
-    secret_name = var.k3s_secret_name
+    project_id             = var.project_id
+    k3s_token_secret_name  = var.k3s_token_secret_name
+    kubeconfig_secret_name = var.kubeconfig_secret_name
   })
 }
 
 # Render agent startup script
 locals {
   agent_startup_script = templatefile("${path.module}/scripts/startup-agent.tpl", {
-    project_id  = var.project_id
-    secret_name = var.k3s_secret_name
-    master_ip   = google_compute_instance.k3s_master.network_interface[0].network_ip
+    project_id            = var.project_id
+    k3s_token_secret_name = var.k3s_token_secret_name
+    master_ip             = google_compute_instance.k3s_master.network_interface[0].network_ip
   })
 }
 
@@ -36,7 +37,7 @@ resource "google_compute_instance" "k3s_master" {
 
   metadata_startup_script = local.master_startup_script
 
-  tags = ["k3s", "k3s-master"]
+  tags = ["k3s", "k3s-master", "mush"]
 
   service_account {
     email  = google_service_account.k3s_nodes.email
@@ -62,7 +63,7 @@ resource "google_compute_instance_template" "k3s_agent_template" {
 
   metadata_startup_script = local.agent_startup_script
 
-  tags = ["k3s", "k3s-agent"]
+  tags = ["k3s", "k3s-agent", "mush"]
 
   service_account {
     email  = google_service_account.k3s_nodes.email
@@ -108,30 +109,3 @@ resource "google_compute_region_autoscaler" "this" {
   }
 }
 
-# Service account for all k3s nodes (master and agents)
-resource "google_service_account" "k3s_nodes" {
-  account_id   = var.k3s_service_account_name
-  display_name = "K3s Nodes Service Account"
-}
-
-# Secret Manager secret for the k3s join token
-resource "google_secret_manager_secret" "k3s_token" {
-  secret_id = var.k3s_secret_name
-  replication {
-    auto {}
-  }
-}
-
-# IAM binding: allow k3s nodes to access the join token secret
-resource "google_secret_manager_secret_iam_member" "nodes_access" {
-  secret_id = google_secret_manager_secret.k3s_token.id
-  role      = "roles/secretmanager.secretAccessor"
-  member    = "serviceAccount:${google_service_account.k3s_nodes.email}"
-}
-
-# IAM binding: allow k3s master to add new versions to the join token secret
-resource "google_secret_manager_secret_iam_member" "nodes_add" {
-  secret_id = google_secret_manager_secret.k3s_token.id
-  role      = "roles/secretmanager.secretVersionAdder"
-  member    = "serviceAccount:${google_service_account.k3s_nodes.email}"
-}

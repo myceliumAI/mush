@@ -22,3 +22,14 @@ Most useful commands are available via the provided `Makefile`:
 - `make format` — Format and validate Terraform code
 
 *Execute `make help` to see the full list*
+
+## Important: 
+
+### Juju Redeployment
+
+If you make changes to the Juju bastion module after it has already been applied, the Juju controller and resources in your cluster may already exist. Retrying an apply without resetting will cause Juju bootstrap or controller setup to fail.
+
+To apply Juju-related changes safely:
+
+1. Run `make destroy` to tear down the existing Terraform stack, including the k3s cluster contianing juju ressources.
+2. Run `make apply` to recreate everything from scratch, ensuring a fresh Juju controller deployment in your cluster.
