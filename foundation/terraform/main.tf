@@ -22,7 +22,7 @@ resource "google_compute_firewall" "k3s_internal" {
 
 # K3s cluster
 module "k3s_cluster" {
-  source     = "./modules/k3s_cluster"
+  source     = "../../tf-modules/k3s_cluster"
   name       = "k3s-cluster"
   region     = var.region
   zone       = var.zone
@@ -31,7 +31,7 @@ module "k3s_cluster" {
 
 # Juju bastion (deploys after k3s cluster since it depends on cluster outputs)
 module "juju_bastion" {
-  source                 = "./modules/juju"
+  source                 = "../../tf-modules/juju"
   name                   = "juju-bastion"
   zone                   = var.zone
   project_id             = var.project_id
